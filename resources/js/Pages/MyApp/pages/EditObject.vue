@@ -1,0 +1,105 @@
+<template>
+    <div class="font-inherit h-full">
+        <Layout/>
+        <div class="relative w-full h-full flex flex-wrap justify-center mb-16 bg-gray-200">
+            <div class="w-1/2 h-full bg-white">
+                <div class="w-full h-20 flex">
+                    <div class="w-full h-full bg-yellow-200 flex justify-center">
+                        <p class="text-2xl self-center">Rezerviši online</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap h-full justify-center py-2 border border-gray shadow-lg mt-5">
+                    <form class="w-3/4" action="/izmeni" @submit.prevent="edit" enctype="multipart/form-data">
+                        <div class="grid grid-rows-2 border-gray border shadow-lg mt-5 justify-center">
+                            <label class="text-center">Ime objekta</label>
+                            <input class="text-sm w-64" type="text" v-model="name" />
+                        </div>
+                        <div class="grid grid-rows-2 border-gray border shadow-lg mt-5 justify-center">
+                            <label class="text-center">Izaberite tip objekta</label>
+                            <select class="text-sm w-64" v-model="type">
+                                <option value="" disabled>
+                                    Izaberite tip objekta
+                                </option>
+                                <option :value="type.name" v-for="type in typesArr" :key="type.name">
+                                    <p>{{ type.name }}</p>
+                                </option>
+                            </select>
+                        </div>
+                        <div class="grid grid-rows-2 border-gray border shadow-lg mt-5 justify-center">
+                            <label class="text-center">Broj mesta</label>
+                            <input class="text-sm w-64" type="text" v-model="num_seats" />
+                        </div>
+                        <div class="grid grid-rows-2 border-gray border shadow-lg mt-5 justify-center">
+                            <label class="text-center">Kontakt telefon</label>
+                            <input class="text-sm w-64" type="text" v-model="contact" />
+                        </div>
+                        <div class="grid grid-rows-2 border-gray border shadow-lg mt-5 justify-center">
+                            <label class="text-center">Radno vreme</label><br>
+                            <div class="grid grid-rows-2 grid-cols-2 border-gray mt-5 justify-center">
+                                <label>Radnim danima:</label>
+                                <input class="text-sm w-64" type="text" v-model="info1" />
+                                <label>Vikendom:</label>
+                                <input class="text-sm w-64" type="text" v-model="info2" />
+                            </div>
+                        </div>
+                        <div class="grid grid-rows-2 border-gray border shadow-lg mt-5 justify-center">
+                            <label class="text-center">Adresa objekta</label>
+                            <input class="text-sm w-64" type="text" v-model="address" />
+                        </div>
+                        <div class="grid border-gray border shadow-lg mt-5 justify-center">
+                            <label class="text-center mb-4">Opis objekta</label>
+                            <textarea class="text-sm resize-none" rows="5" cols="50" v-model="description"></textarea>
+                        </div>
+                        <div class="grid border-gray border shadow-lg mt-5 justify-center">
+                            <label class="text-center mb-2">Profilna slika objekta</label>
+                            <img class="h-36 w-60 mb-4" :src="'/storage' + facility[0].profile_image" />
+                            <input type="file" @change="onChange">
+                        </div>
+                        <div class="flex flex-wrap justify-center">
+                            <button type="submit" class="bg-red-700 text-white rounded w-1/2 py-2 my-4">Izmeni</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <Footer />
+    </div>
+</template>
+
+<script>
+import Layout from '../layouts/Layout.vue';
+import Footer from '../components/Footer.vue';
+
+export default {
+    components: { Layout, Footer },
+    props: ['facility'],
+    data() {
+        return {
+            typesArr: [
+                {name:'kafana'}, {name: 'klub'}, {name: 'kafic'}, {name: 'restoran'}],
+                id: this.$props.facility[0].id,
+                name: this.$props.facility[0].name,
+                type: this.$props.facility[0].type,
+                num_seats: this.$props.facility[0].num_seats,
+                contact: this.$props.facility[0].contact,
+                info1: this.$props.facility[0].info.substr(11, 11),
+                info2: this.$props.facility[0].info.substr(32, 32),
+                address: this.$props.facility[0].address,
+                description: this.$props.facility[0].description,
+                file: this.$props.facility[0].profile_image,
+        };
+    },
+    methods: {
+        edit() {
+            this.$inertia.post('/izmeni', {id: this.id, name: this.name, type: this.type, num_seats: this.num_seats, contact: this.contact, info1: this.info1, info2: this.info2, address: this.address, description: this.description, file: this.file });
+        },
+        onChange(e) {
+            this.file = e.target.files[0];
+        },
+    }
+}
+</script>
+
+<style>
+
+</style>
